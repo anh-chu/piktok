@@ -13,6 +13,17 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/anh-chu/piktok",
     packages=setuptools.find_packages(),
+    install_requires = [
+        "requests",
+        "orjson",
+        "uvloop",
+        "aiohttp",
+        "termcolor",
+        "pyhumps",
+        "inflection",
+        "jmespath",
+        "pyppeteer",
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
