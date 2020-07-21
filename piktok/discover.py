@@ -2,13 +2,13 @@ from aiohttp import ClientSession
 from .base import Base
 
 
+# TODO: implement offsets
+
+
 class Discover(Base):
     """
     Class to get users, musics, and challenges from the Discover page.
     """
-
-    _session: ClientSession
-    _proxy: str
 
     _headers = {
         "accept": "application/json, text/plain, */*",
@@ -39,23 +39,43 @@ class Discover(Base):
         """
         Return musics on the Discover page
 
-        :param kwargs: any path_parameters. Experiment with
-        [need_item_list, key_word, offset, count, use_recommend, language]
-        :return: musics from the Discover page
+        Args:
+            **kwargs: any path_parameters
+        Notes:
+            Experiment with parameters [need_item_list, key_word, offset, count, use_recommend, language]
+        Returns:
+            dict: musics from the Discover page
+
         """
         url = self._urls.get("music")
         return await self._get_data(url, self._headers, kwargs, self._proxy)
 
     async def user(self, **kwargs):
         """
-        Same as the music method, but for user
+        Return users on the Discover page
+
+        Args:
+            **kwargs: any path_parameters
+        Notes:
+            Experiment with parameters [need_item_list, key_word, offset, count, use_recommend, language]
+        Returns:
+            dict: users from the Discover page
+
         """
         url = self._urls.get("user")
         return await self._get_data(url, self._headers, kwargs, self._proxy)
 
     async def challenge(self, **kwargs):
         """
-        Same as the music method, but for challenge
+        Return challenges on the Discover page
+
+        Args:
+            **kwargs: any path_parameters
+        Notes:
+            Experiment with parameters [need_item_list, key_word, offset, count, use_recommend, language]
+        Returns:
+            dict: challenges from the Discover page
+
         """
         url = self._urls.get("challenge")
         return await self._get_data(url, self._headers, kwargs, self._proxy)

@@ -1,12 +1,13 @@
 from collections import deque
 from random import sample
 from typing import List
+from tqdm import tqdm
 
 import jmespath as jp
 from aiohttp import ClientSession
-from termcolor import colored
+from colored import stylize
 
-from .base import Base
+from .base import Base, ERROR, s_print, INFO
 
 
 class Suggested(Base):
@@ -37,9 +38,13 @@ class Suggested(Base):
         """
         Transform the results of finding suggested users, musics, and challenges from list of lists to dict of lists
 
-        :param results_list: list of lists (each child list corresponds to either user, challege, and music
-        :param no_user: whether there is a list of users at the start of the list or not
-        :return: converted dictionary
+        Args:
+            results_list (list): list of lists (each child list corresponds to either user, challege, and music
+            no_user (bool): whether there is a list of users at the start of the list or not
+
+        Returns:
+            dict: converted dictionary
+
         """
         if no_user:
             return {"challenge": results_list[0], "music": results_list[1]}
@@ -52,10 +57,14 @@ class Suggested(Base):
     @classmethod
     def merge_crawl_results(cls, results_list: List[dict]) -> dict:
         """
-        Merge together the results of crawling from a list of many dicts sharing the same keys to one dict with those keys
+        Merge together the results of crawling from a list of many dicts sharing
+        the same keys to one dict with those keys
 
-        :param results_list: list of dicts with 'users', 'challenges', and 'musics' keys
-        :return: dict merged from the lists
+        Args:
+            results_list (list): list of dicts with 'users', 'challenges', and 'musics' keys
+
+        Returns:
+            dict: dict merged from the lists
         """
         users = challenges = musics = []
         for result_dict in results_list:
@@ -70,15 +79,17 @@ class Suggested(Base):
         """
         Fetch suggested users, musics, and challenges.
 
-        :param user_id: ID of the TikTok user for whom suggestions are made
-        :param user_count: number of suggested users (only) to return from the call
-        :param no_user: whether or not to return suggested users
-        :param kwargs: any other path parameters
-        :return: dict of the suggested elements
-        """
+        Args:
+            user_id (int): ID of the TikTok user for whom suggestions are made
+            user_count (int): number of suggested users (only) to return from the call
+            no_user (bool): whether or not to return suggested users
+            **kwargs: any other path parameters
 
+        Returns:
+            dict: dict of the suggested elements
+        """
         if user_count > 99:
-            raise ValueError(colored("user_count must be < 100", "red"))
+            raise ValueError(("user_count must be < 100", "red"))
 
         url = self._url
 
@@ -107,16 +118,19 @@ class Suggested(Base):
         """
         Crawl many suggested elements by using a spider
 
-        :param depth: the depth of crawling (depth * choice_count = number of calls made)
-        :param choice_count: how many user IDs to sample from each result set to crawl on next
-        :param user_id: starting user ID
-        :param user_count: how many suggested users to return from each call
-        :param kwargs: other path parameters
-        :return: dict of crawled suggested elements
+        Args:
+            depth (int): the depth of crawling (depth * choice_count = number of calls made)
+            choice_count (int): how many user IDs to sample from each result set to crawl on next
+            user_id (int): starting user ID
+            user_count (int): how many suggested users to return from each call
+            **kwargs: other path parameters
+
+        Returns:
+            dict: dict of crawled suggested elements
         """
         if user_count < choice_count or user_count < 10:
             raise ValueError(
-                colored("user_count must be >= choice_count and >= 10", "red")
+                stylize("user_count must be >= choice_count and >= 10", ERROR)
             )
 
         user_ids_queue = deque([user_id])
@@ -124,18 +138,22 @@ class Suggested(Base):
         level = 0
         results = []
 
-        while len(user_ids_queue):
-            next_user_id = user_ids_queue.popleft()
+        s_print("Starting crawler...", INFO)
 
-            items = await self.fetch(next_user_id, user_count, False, **kwargs)
-            results.append(items)
+        with tqdm(total=(choice_count ** 2) * depth + 1) as pbar:
+            while len(user_ids_queue):
+                next_user_id = user_ids_queue.popleft()
 
-            response_user_ids = [
-                item["cardItem"]["id"] for item in items.get("user", [])
-            ]
+                items = await self.fetch(next_user_id, user_count, False, **kwargs)
+                results.append(items)
 
-            if level < limit:
-                user_ids_queue.extend(sample(response_user_ids, choice_count))
-                level += 1
+                response_user_ids = [
+                    item["cardItem"]["id"] for item in items.get("user", [])
+                ]
+
+                pbar.update()
+                if level < limit:
+                    user_ids_queue.extend(sample(response_user_ids, choice_count))
+                    level += 1
 
         return self.merge_crawl_results(results)

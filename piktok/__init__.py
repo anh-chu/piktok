@@ -2,36 +2,50 @@ import asyncio
 import atexit
 
 from aiohttp import ClientSession, TCPConnector
-from termcolor import colored
-
+from .base import INFO, SUCCESS, s_print
 from .discover import Discover
 from .suggested import Suggested
-from .tiktoks import TikTok
+from .tiktoks import TikToks
+from .info import Info
 from .verifier import Verifier
 
 
 class App:
     """
-    Main application class. Initialize with app = App() to start.
+    Main application class. Initialize with app = App(proxy) to start.
     """
 
-    _session: ClientSession
-    _proxy: str
+    _session: ClientSession = None
 
-    discover: Discover
-    suggested: Suggested
+    @classmethod
+    def __create(cls):
+        if cls._session is None:
+            cls._session = ClientSession(connector=TCPConnector(verify_ssl=False))
 
     def __init__(self, proxy: str = None):
-        self._session = ClientSession(connector=TCPConnector(verify_ssl=False))
-        self._proxy = proxy
+        """
+        Args:
+            proxy (str): proxy server url
+        """
+        App.__create()
+        s_print("HTTP session connected", INFO)
+
+        self._proxy = ""
+        if proxy:
+            s_print(f"Connecting to proxy at {proxy}", INFO)
+            self._proxy = proxy
 
         self.discover = Discover(self._session, self._proxy)
         self.suggested = Suggested(self._session, self._proxy)
-        self.tiktoks = TikTok(Verifier(self._session, self._proxy))
+        verifier_object = Verifier(self._session, self._proxy)
+        self.tiktoks = TikToks(verifier_object)
+        self.info = Info(verifier_object)
 
-        atexit.register(self.cleanup)
+        s_print("Started component apps", INFO)
 
-        print(colored("Initialized app!", "green"))
+        atexit.register(App.cleanup)
+
+        s_print("Initialized app!", SUCCESS)
 
     @property
     def proxy(self):
@@ -41,13 +55,9 @@ class App:
     def proxy(self, proxy: str):
         self._proxy = proxy
 
-    async def close(self):
-        await self._session.close()
-
-    def cleanup(self):
-        """
-        Cleanup application by closing the aiohttp client session
-        """
-        loop = asyncio.get_event_loop()
-        print(colored("Closing async session...", "yellow"))
-        loop.create_task(self.close())
+    @classmethod
+    def cleanup(cls):
+        s_print("Closing HTTP session...", INFO)
+        if cls._session:
+            asyncio.get_event_loop().create_task(cls._session.close())
+        s_print("App shut down.", SUCCESS)

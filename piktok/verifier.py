@@ -10,6 +10,10 @@ from .stealth import stealth
 
 
 class Verifier:
+    """
+    Class for verifying TikTok fingerprint
+    """
+
     browser = None
     page = None
     redirect_url: str
@@ -54,8 +58,7 @@ class Verifier:
 
         self.find_redirect = find_redirect
 
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.start_up())
+        asyncio.get_event_loop().run_until_complete(self.start_up())
 
     @property
     def session(self):

@@ -16,11 +16,17 @@ pip install git+git://github.com/anh-chu/piktok.git#egg=piktok
 from piktok import App
 
 
-app = App(proxy="")
+proxy = ... # url str or None
 
-app.tiktoks.from_user(user_id=...) # returns tiktoks by the user
-app.suggested.fetch() # returns suggested musics, challenges, and users
-app.discover.music() # retuns music from the discover page
+app = App(proxy=proxy)
+
+# every functions are async - make sure to implement accordingly
+await app.discover.user()
+await app.discover.music()
+await app.suggested.fetch()
+await app.info.user_by_name('fpgezekatz')
+await app.tiktoks.from_user_id(6834564640216974341, total=200)
+await app.suggested.crawl(7, 3, user_id=143273922984189952, user_count=30)
 ```
 
 ## Contributing

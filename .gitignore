@@ -214,5 +214,4 @@ dmypy.json
 cython_debug/
 
 tmp/
-tests/
 Pipfile

@@ -1,25 +1,54 @@
+import colored
 import orjson
 from aiohttp import ClientSession
+from colored import stylize
 from humps import decamelize
 from inflection import camelize
 
 
+SUCCESS = colored.fg("light_green") + colored.attr("bold")
+INFO = colored.fg("aquamarine_3")
+ERROR = colored.fg("red")
+
+
+def s_print(text: str, style: colored):
+    """
+    Print text with style in the terminal
+
+    Args:
+        text (str): text to print
+        style (colored): style to print with
+
+    Returns:
+        None: None
+    """
+    print(stylize(text, style))
+
+
 class Base:
-    _session: ClientSession
-    _headers: dict
-    _params: dict
-    _proxy: str
-    _url: str
-    _urls: list
+    _headers: dict = {}
+    _params: dict = {}
+    _proxy: str = ""
+    _url: str = ""
+    _urls: list = []
+    _session: ClientSession = None
+
+    @classmethod
+    def init_class(cls, session: ClientSession, proxy: str):
+        if cls._session is None:
+            cls._session = session
+        if cls._proxy is None:
+            cls._proxy = proxy
 
     def __init__(self, session: ClientSession, proxy: str):
-        self._session = session
-        self._proxy = proxy
+        self.init_class(session, proxy)
 
     @classmethod
     def get_default_params(cls):
         """
-        :return: the default parameters to be used in music, user, and challenge
+        Returns:
+            dict: the default parameters to be used in music, user, and challenge
+
         """
         return decamelize(cls._params)
 
@@ -28,8 +57,12 @@ class Base:
         """
         Call .utils.options_to_params to convert keyword options to params
 
-        :param options: keyword options to convert
-        :return: dict of converted path parameters
+        Args:
+            options (dict): keyword options to convert
+
+        Returns:
+            dict: dict of converted path parameters
+
         """
         new_options = {**cls._params, **options}
         return cls.__options_to_params(new_options)
@@ -39,8 +72,12 @@ class Base:
         """
         Convert keywords options to a dict of RESTful parameters
 
-        :param options: dict of keyword options
-        :return: dict of parameterized options
+        Args:
+            options (dict): dict of keyword options
+
+        Returns:
+            dict: dict of parameterized options
+
         """
         params = {}
         for key, val in options.items():
@@ -54,18 +91,20 @@ class Base:
         """
         Async get URL and return a dict of results read using ORJSON and aiohttp
 
-        :param url: url to get
-        :param headers: dict of headers
-        :param params: dict of path parameters
-        :param proxy: http url of proxy server
-        :return: response converted to dict
-        """
-        new_params = self.__convert_options({**params, **kwargs})
-        params = {**self._params, **new_params}
+        Args:
+            url (str): url to get
+            headers (dict): dict of headers
+            params (dict): dict of path parameters
+            proxy (str): http url of proxy server
+            **kwargs:
 
+        Returns:
+            dict: response converted to dict
+
+        """
+        converted_params = self.__convert_options({**params, **kwargs})
         async with self._session.get(
-            url, headers=headers, params=params, proxy=proxy
+            url, headers=headers, params=converted_params, proxy=proxy
         ) as response:
             content = await response.content.read()
-        print(content)
         return orjson.loads(content)
