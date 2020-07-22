@@ -7,7 +7,7 @@ Piktok is a Python library for retrieving public data from TikTok.
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install piktok.
 
 ```bash
-pip install git+git://github.com/anh-chu/piktok.git#egg=piktok
+pip install piktok
 ```
 
 ## Usage
