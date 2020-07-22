@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="piktok",
-    version="0.0.1",
+    version="0.1.2",
     author="Anh Chu",
     author_email="chuducanh.atred@gmail.com",
     description="A fast module to retrieve data from TikTok",

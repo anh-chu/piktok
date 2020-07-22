@@ -86,7 +86,7 @@ class Verifier:
 
         self.find_redirect = find_redirect
 
-        asyncio.get_event_loop().run_until_complete(self.start_up())
+        asyncio.get_event_loop().create_task(self.start_up())
 
     @property
     def session(self):
@@ -235,7 +235,7 @@ class Verifier:
 
         self.find_redirect = find_redirect
 
-        asyncio.get_event_loop().run_until_complete(self.start_up())
+        asyncio.get_event_loop().create_task(self.start_up())
 
     @property
     def session(self):
