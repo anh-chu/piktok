@@ -6,8 +6,6 @@ from contextlib import suppress
 from aiohttp import ClientSession
 from pyppeteer import launch
 
-from .stealth import stealth
-
 
 class Verifier:
     """
@@ -86,8 +84,6 @@ class Verifier:
                     "password": self._proxy.split("://")[1].split(":")[1].split("@")[0],
                 }
             )
-
-        await stealth(self.page)
 
     async def get_verifiers(self, url: str) -> dict:
         if self.find_redirect:
