@@ -34,7 +34,7 @@ class Suggested(Base):
         super().__init__(session, proxy)
 
     @staticmethod
-    def separate_results(results_list: list, no_user: bool) -> dict:
+    def __separate_results(results_list: list, no_user: bool) -> dict:
         """
         Transform the results of finding suggested users, musics, and challenges from list of lists to dict of lists
 
@@ -55,7 +55,7 @@ class Suggested(Base):
         }
 
     @classmethod
-    def merge_crawl_results(cls, results_list: List[dict]) -> dict:
+    def __merge_crawl_results(cls, results_list: List[dict]) -> dict:
         """
         Merge together the results of crawling from a list of many dicts sharing
         the same keys to one dict with those keys
@@ -71,7 +71,7 @@ class Suggested(Base):
             users.extend(result_dict.get("user", []))
             challenges.extend(result_dict.get("challenge", []))
             musics.extend(result_dict.get("music", []))
-        return cls.separate_results([users, challenges, musics], False)
+        return cls.__separate_results([users, challenges, musics], False)
 
     async def fetch(
         self, user_id: str = None, user_count: int = 30, no_user: bool = False, **kwargs
@@ -103,7 +103,7 @@ class Suggested(Base):
             url, self._headers, explicit_kwargs, self._proxy, **kwargs
         )
 
-        return self.separate_results(
+        return self.__separate_results(
             jp.search("body[*].exploreList", response), no_user
         )
 
@@ -156,4 +156,4 @@ class Suggested(Base):
                     user_ids_queue.extend(sample(response_user_ids, choice_count))
                     level += 1
 
-        return self.merge_crawl_results(results)
+        return self.__merge_crawl_results(results)

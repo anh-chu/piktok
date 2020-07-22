@@ -17,7 +17,7 @@ def s_print(text: str, style: colored):
 
     Args:
         text (str): text to print
-        style (colored): style to print with
+        style (colored): colored style to print with
 
     Returns:
         None: None
@@ -26,6 +26,9 @@ def s_print(text: str, style: colored):
 
 
 class Base:
+    """
+    Base class used to construct other classes.
+    """
     _headers: dict = {}
     _params: dict = {}
     _proxy: str = ""

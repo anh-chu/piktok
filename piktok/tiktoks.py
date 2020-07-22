@@ -60,7 +60,7 @@ class TikToks(Base):
         explicit_kwargs.update(verifiers)
         return headers, explicit_kwargs
 
-    async def _fetch_and_scroll(
+    async def __fetch_and_scroll(
         self,
         total: int,
         url: str,
@@ -121,7 +121,7 @@ class TikToks(Base):
         explicit_kwargs["type"] = 4
         explicit_kwargs["id"] = music_id
 
-        return await self._fetch_and_scroll(
+        return await self.__fetch_and_scroll(
             total, url, headers, explicit_kwargs, self._proxy, **kwargs
         )
 
@@ -145,7 +145,7 @@ class TikToks(Base):
         explicit_kwargs["type"] = 1
         explicit_kwargs["id"] = user_id
 
-        return await self._fetch_and_scroll(
+        return await self.__fetch_and_scroll(
             total, url, headers, explicit_kwargs, self._proxy, **kwargs
         )
 
@@ -169,6 +169,6 @@ class TikToks(Base):
         explicit_kwargs["type"] = 3
         explicit_kwargs["id"] = challenge_id
 
-        return await self._fetch_and_scroll(
+        return await self.__fetch_and_scroll(
             total, url, headers, explicit_kwargs, self._proxy, **kwargs
         )
