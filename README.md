@@ -29,6 +29,9 @@ await app.tiktoks.from_user_id(6834564640216974341, total=200)
 await app.suggested.crawl(7, 3, user_id=143273922984189952, user_count=30)
 ```
 
+## Documentation
+https://anh-chu.github.io/piktok/
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
