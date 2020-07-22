@@ -15,8 +15,6 @@ B
 piktok/verifier.py,b/1/b123843959d97019d2f22b5b77cedce5531f80f9
 >
 piktok/base.py,f/1/f1ef52227a332d3555706104e90984ed04fade70
-G
-tests/test_signature.py,b/c/bceca5578880f2bf9f1f1c9c32cfdeca55ef4265
 A
 piktok/tiktoks.py,8/5/8547f005e168edacd0d9c01b0d0489fbd2ecae5a
 :
@@ -34,8 +32,6 @@ A
 requirements.txt,1/9/19359a61ae2446b51b549167b014da2fcf265768
 E
 html/piktok/base.html,a/2/a2c9369a81fef4ee262bc12720b42174118049ca
-8
-out.json,7/9/7911d590ed5bb050cb4101c349affad93d88eb91
 F
 html/piktok/index.html,9/3/93a4a39e3ba23b0f1ac29e6c26d9140fb8be8296
 <

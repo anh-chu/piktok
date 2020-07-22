@@ -37,7 +37,7 @@ class Base:
     def init_class(cls, session: ClientSession, proxy: str):
         if cls._session is None:
             cls._session = session
-        if cls._proxy is None:
+        if not cls._proxy:
             cls._proxy = proxy
 
     def __init__(self, session: ClientSession, proxy: str):

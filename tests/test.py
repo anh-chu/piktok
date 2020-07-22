@@ -8,7 +8,7 @@ from aiomisc.service import Profiler
 
 
 # proxy = "http://123.122.68.1:88"
-proxy = None
+#proxy = None
 
 
 async def main():
